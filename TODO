@@ -1,0 +1,12 @@
+- graph
+  - canvas that takes in points and scales them
+  - axes based on min and maxes of points
+  - labelled axes
+  - screen resolution-flexible
+  - turn graph into UI component in the package
+
+- points
+  - input field for json list of points + cluster
+  - coloring points based on cluster
+  - click to add points
+  - button to output points
