@@ -1,9 +1,16 @@
+- canvas
+  - use canvas from base game
+    - remove extraneous stuff
+    - check how it integrates
+  - make canvas into a UI component and require it
+  - screen resolution-flexible
+
 - graph
-  - canvas that takes in points and scales them
+  - takes in points and scales them to the canvas/axes
   - axes based on min and maxes of points
   - labelled axes
-  - screen resolution-flexible
   - turn graph into UI component in the package
+  - make graph into a UI component and require it
 
 - points
   - input field for json list of points + cluster
