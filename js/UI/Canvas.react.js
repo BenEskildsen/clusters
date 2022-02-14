@@ -1,28 +1,33 @@
-// @flow
-
 const React = require('react');
-const {config} = require('../config');
 const {useEffect, useState, useMemo, Component} = React;
 
-type Props = {
-  dispatch: (action: Action) => void,
-};
+function Canvas(props: Props) {
+  let {
+    useFullScreen,
+    // only necessary if not useFullScreen
+    windowWidth, windowHeight,
 
-function Canvas(props: Props): React.Node {
-  const {
+    // needed for focusing an entity
+    focus, // Entity
+    cellSize, // size in pixels of grid space
     dispatch,
-    innerWidth, innerHeight,
-    isExperimental,
-    focusedEntity,
   } = props;
 
   // calculate max canvas width (allows canvas sizing DOWN)
-  let maxHeight = Math.min(2000, innerHeight, innerWidth * 1.33);
+  let maxHeight = Math.min(2000, windowHeight, windowWidth * 1.33);
   let maxWidth = maxHeight * 0.75;
 
-  if (config.useFullScreen && !isExperimental) {
-    maxWidth = innerWidth;
-    maxHeight = innerHeight;
+  let canvasWidth = maxWidth;
+  let canvasHeight = maxHeight;
+
+  if (useFullScreen && !windowWidth) {
+    windowWidth = window.innerWidth;
+    windowHeight = window.innerHeight;
+  }
+
+  if (useFullScreen) {
+    maxWidth = windowWidth;
+    maxHeight = windowHeight;
     let sizeMult = 0.9;
     if (maxWidth < 600 || maxHeight < 800) {
       sizeMult = 0.75;
@@ -34,32 +39,32 @@ function Canvas(props: Props): React.Node {
       sizeMult = 1.3;
     }
     useEffect(() => {
-      let viewPos = {x:0, y: 0};
-      const viewWidth = maxWidth / (config.cellWidth * sizeMult);
-      const viewHeight = maxHeight / (config.cellHeight * sizeMult);
-      if (focusedEntity != null) {
-        viewPos = {
-          x: focusedEntity.position.x - viewWidth / 2,
-          y: focusedEntity.position.y - viewHeight /2,
-        };
+      if (focus != null) {
+        let viewPos = {x:0, y: 0};
+        const viewWidth = maxWidth / (cellSize * sizeMult);
+        const viewHeight = maxHeight / (cellHeight * sizeMult);
+          viewPos = {
+            x: focus.position.x - viewWidth / 2,
+            y: focus.position.y - viewHeight /2,
+          };
+        dispatch({type: 'SET_VIEW_POS',
+          viewPos, viewWidth, viewHeight,
+        });
       }
-      dispatch({type: 'SET_VIEW_POS',
-        viewPos, viewWidth, viewHeight,
-      });
     }, [maxWidth, maxHeight]);
 
-    if (maxWidth != config.canvasWidth) {
-      config.canvasWidth = maxWidth;
+    if (maxWidth != canvasWidth) {
+      canvasWidth = maxWidth;
     }
-    if (maxHeight != config.canvasHeight) {
-      config.canvasHeight = maxHeight;
+    if (maxHeight != canvasHeight) {
+      canvasHeight = maxHeight;
     }
-  } else if (isExperimental) {
+  } else {
     // HACK: for when opening up the editor UI in game mode
-    config.canvasWidth = Math.min(config.canvasWidth, 1200);
+    canvasWidth = Math.min(canvasWidth, 1200);
   }
 
-  const defaultStyle = {
+  const fullScreenStyle = {
     height: '100%',
     width: '100%',
     maxWidth,
@@ -67,7 +72,7 @@ function Canvas(props: Props): React.Node {
     margin: 'auto',
     position: 'relative',
   };
-  const experimentalStyle = {
+  const nonFullScreenStyle = {
     height: config.canvasHeight,
     width: config.canvasWidth,
     maxWidth: config.canvasWidth,
@@ -79,7 +84,7 @@ function Canvas(props: Props): React.Node {
 
   return (
     <div id="canvasWrapper"
-      style={isExperimental ? experimentalStyle : defaultStyle}
+      style={useFullScreen ? nonFullScreenStyle : fullScreenStyle}
     >
       <canvas
         id="canvas" style={{

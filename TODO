@@ -1,6 +1,5 @@
 - canvas
   - use canvas from base game
-    - remove extraneous stuff
     - check how it integrates
   - make canvas into a UI component and require it
   - screen resolution-flexible
