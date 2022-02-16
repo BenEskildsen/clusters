@@ -1,13 +1,12 @@
 #!/bin/bash
 # Copy the entire directory this file is in as the base for your game.
-# get rid of all the node_modules
-# Then run to get all these node files
-# Comment out things you don't need
+# get rid of all the node_modules. Then run to get all these node files
 
 npm init
 
 # bens ui components
 sudo npm install bens_ui_components
+sudo npm install bens_utils
 
 # flow
 sudo npm install --save-dev flow-bin
@@ -30,9 +29,6 @@ sudo npm install --save react react-dom
 # redux
 sudo npm install --save redux
 
-# make canvas art look like sketches
-# npm install --save roughjs
-
 # d3
 # sudo npm install d3
 # npm install topojson-client
@@ -41,24 +37,23 @@ sudo npm install --save redux
 # sudo npm install eureca.io
 # sudo npm install wrtc
 # sudo npm install engine.io
+# express
+# npm install express --save
+# clientside REST
+# npm install axios
 
-#eureca
-npm install express --save
+# postgres
+# npm install pg
 
 # react native server
 # npm install -g expo-cli
 
-# postgres
-npm install pg
-
-# clientside REST
-# npm install axios
-
 # electron
 # npm i -D electron@latest
-
 # electron forge
 # npm i -g @electron-forge/cli
-
 # electron squirrel
 # npm i @electron-forge/maker-squirrel
+
+# make canvas art look like sketches
+# npm install --save roughjs

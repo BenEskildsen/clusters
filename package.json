@@ -1,0 +1,25 @@
+{
+  "name": "clusters",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "clusters": "bin/bundle.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "flow": "flow",
+    "babel": "babel",
+    "browserify": "browserify"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BenEskildsen/clusters.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BenEskildsen/clusters/issues"
+  },
+  "homepage": "https://github.com/BenEskildsen/clusters#readme"
+}

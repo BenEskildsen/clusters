@@ -1,3 +1,6 @@
+- npm
+  - install dependencies
+
 - canvas
   - use canvas from base game
     - check how it integrates

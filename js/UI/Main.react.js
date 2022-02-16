@@ -10,11 +10,10 @@ type Props = {
   state: State, // Game State
   dispatch: (action: Action) => Action,
   store: Object,
-  modal: Object,
 };
 
 function Main(props: Props): React.Node {
-  const {state, modal} = props;
+  const {state} = props;
 
 
 
@@ -31,14 +30,28 @@ function Main(props: Props): React.Node {
   );
 }
 
+type axis = {
+  min: ?number,
+  max: ?number,
+  majorTicks: ?number,
+  minorTicks: ?number,
+  label: ?string,
+}
+
 const Graph = (props) => {
+  const {points, xAxis, yAxis} = props;
 
   return (
     <div
       style={{
-
+        border: '1px solid black',
       }}
     >
+      <Canvas
+        useFullScreen={false}
+        windowWidth={500}
+        windowHeight={400}
+      />
 
     </div>
   )
