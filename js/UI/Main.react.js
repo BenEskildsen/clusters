@@ -45,12 +45,14 @@ const Graph = (props) => {
     <div
       style={{
         border: '1px solid black',
+        width: 500,
+        height: 400,
       }}
     >
       <Canvas
         useFullScreen={false}
-        windowWidth={500}
-        windowHeight={400}
+        width={500}
+        height={400}
       />
 
     </div>

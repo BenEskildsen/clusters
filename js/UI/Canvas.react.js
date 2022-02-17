@@ -5,44 +5,46 @@ function Canvas(props: Props) {
   let {
     useFullScreen,
     // only necessary if not useFullScreen
-    windowWidth, windowHeight,
+    width, height,
 
-    // needed for focusing an entity
-    focus, // Entity
+    // needed for resizing images on canvas relative to canvas size
     cellSize, // size in pixels of grid space
     dispatch,
+
+    // needed for focusing an entity (plus cellSize and dispatch)
+    focus, // Entity
   } = props;
 
-  // calculate max canvas width (allows canvas sizing DOWN)
-  let maxHeight = Math.min(2000, windowHeight, windowWidth * 1.33);
-  let maxWidth = maxHeight * 0.75;
+  const [windowWidth, setWindowWidth] = useState(width ? width : window.innerWidth);
+  const [windowHeight, setWindowHeight] = useState(height ? height : window.innerHeight);
 
-  let canvasWidth = maxWidth;
-  let canvasHeight = maxHeight;
+  useEffect(() => {
+    function handleResize() {
+      if (useFullScreen) {
+        setWindowWidth(window.innerWidth)
+        setWindowHeight(window.innerHeight)
+      }
+    }
 
-  if (useFullScreen && !windowWidth) {
-    windowWidth = window.innerWidth;
-    windowHeight = window.innerHeight;
-  }
+    window.addEventListener('resize', handleResize);
+  });
 
   if (useFullScreen) {
-    maxWidth = windowWidth;
-    maxHeight = windowHeight;
     let sizeMult = 0.9;
-    if (maxWidth < 600 || maxHeight < 800) {
+    if (windowWidth < 600 || windowHeight < 800) {
       sizeMult = 0.75;
     }
-    if (maxWidth > 1000 || maxHeight > 1000) {
+    if (windowWidth > 1000 || windowHeight > 1000) {
       sizeMult = 1.25;
     }
-    if (maxWidth > 1200 || maxHeight > 1200) {
+    if (windowWidth > 1200 || windowHeight > 1200) {
       sizeMult = 1.3;
     }
     useEffect(() => {
       if (focus != null) {
         let viewPos = {x:0, y: 0};
-        const viewWidth = maxWidth / (cellSize * sizeMult);
-        const viewHeight = maxHeight / (cellHeight * sizeMult);
+        const viewWidth = windowWidth / (cellSize * sizeMult);
+        const viewHeight = windowHeight / (cellHeight * sizeMult);
           viewPos = {
             x: focus.position.x - viewWidth / 2,
             y: focus.position.y - viewHeight /2,
@@ -51,32 +53,18 @@ function Canvas(props: Props) {
           viewPos, viewWidth, viewHeight,
         });
       }
-    }, [maxWidth, maxHeight]);
-
-    if (maxWidth != canvasWidth) {
-      canvasWidth = maxWidth;
-    }
-    if (maxHeight != canvasHeight) {
-      canvasHeight = maxHeight;
-    }
-  } else {
-    // HACK: for when opening up the editor UI in game mode
-    canvasWidth = Math.min(canvasWidth, 1200);
+    }, [windowWidth, windowHeight]);
   }
 
   const fullScreenStyle = {
     height: '100%',
     width: '100%',
-    maxWidth,
-    maxHeight,
     margin: 'auto',
     position: 'relative',
   };
   const nonFullScreenStyle = {
-    height: canvasHeight,
-    width: canvasWidth,
-    maxWidth: canvasWidth,
-    maxHeight: canvasHeight,
+    height: windowHeight,
+    width: windowWidth,
     position: 'absolute',
     top: 0,
     left: 0,
@@ -84,14 +72,14 @@ function Canvas(props: Props) {
 
   return (
     <div id="canvasWrapper"
-      style={useFullScreen ? nonFullScreenStyle : fullScreenStyle}
+      style={useFullScreen ? fullScreenStyle : nonFullScreenStyle}
     >
       <canvas
         id="canvas" style={{
           backgroundColor: 'white',
           cursor: 'pointer',
         }}
-        width={canvasWidth} height={canvasHeight}
+        width={windowWidth} height={windowHeight}
       />
     </div>
   );

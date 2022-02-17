@@ -2,9 +2,7 @@
   - get server files in
 
 - canvas
-  - fix styling
   - make canvas into a UI component and require it
-  - screen resolution-flexible
 
 - graph
   - takes in points and scales them to the canvas/axes

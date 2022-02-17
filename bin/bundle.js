@@ -92,6 +92,8 @@ module.exports = { rootReducer: rootReducer };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -107,43 +109,53 @@ var useEffect = React.useEffect,
 
 function Canvas(props) {
   var useFullScreen = props.useFullScreen,
-      windowWidth = props.windowWidth,
-      windowHeight = props.windowHeight,
+      width = props.width,
+      height = props.height,
       focus = props.focus,
       cellSize = props.cellSize,
       dispatch = props.dispatch;
 
   // calculate max canvas width (allows canvas sizing DOWN)
+  // let windowHeight = Math.min(2000, windowHeight, windowWidth * 1.33);
+  // let windowWidth = windowHeight * 0.75;
 
-  var maxHeight = Math.min(2000, windowHeight, windowWidth * 1.33);
-  var maxWidth = maxHeight * 0.75;
+  var _useState = useState(width ? width : window.innerWidth),
+      _useState2 = _slicedToArray(_useState, 2),
+      windowWidth = _useState2[0],
+      setWindowWidth = _useState2[1];
 
-  var canvasWidth = maxWidth;
-  var canvasHeight = maxHeight;
+  var _useState3 = useState(height ? height : window.innerHeight),
+      _useState4 = _slicedToArray(_useState3, 2),
+      windowHeight = _useState4[0],
+      setWindowHeight = _useState4[1];
 
-  if (useFullScreen && !windowWidth) {
-    windowWidth = window.innerWidth;
-    windowHeight = window.innerHeight;
-  }
+  useEffect(function () {
+    function handleResize() {
+      if (useFullScreen) {
+        setWindowWidth(window.innerWidth);
+        setWindowHeight(window.innerHeight);
+      }
+    }
+
+    window.addEventListener('resize', handleResize);
+  });
 
   if (useFullScreen) {
-    maxWidth = windowWidth;
-    maxHeight = windowHeight;
     var sizeMult = 0.9;
-    if (maxWidth < 600 || maxHeight < 800) {
+    if (windowWidth < 600 || windowHeight < 800) {
       sizeMult = 0.75;
     }
-    if (maxWidth > 1000 || maxHeight > 1000) {
+    if (windowWidth > 1000 || windowHeight > 1000) {
       sizeMult = 1.25;
     }
-    if (maxWidth > 1200 || maxHeight > 1200) {
+    if (windowWidth > 1200 || windowHeight > 1200) {
       sizeMult = 1.3;
     }
     useEffect(function () {
       if (focus != null) {
         var viewPos = { x: 0, y: 0 };
-        var viewWidth = maxWidth / (cellSize * sizeMult);
-        var viewHeight = maxHeight / (cellHeight * sizeMult);
+        var viewWidth = windowWidth / (cellSize * sizeMult);
+        var viewHeight = windowHeight / (cellHeight * sizeMult);
         viewPos = {
           x: focus.position.x - viewWidth / 2,
           y: focus.position.y - viewHeight / 2
@@ -152,32 +164,18 @@ function Canvas(props) {
           viewPos: viewPos, viewWidth: viewWidth, viewHeight: viewHeight
         });
       }
-    }, [maxWidth, maxHeight]);
-
-    if (maxWidth != canvasWidth) {
-      canvasWidth = maxWidth;
-    }
-    if (maxHeight != canvasHeight) {
-      canvasHeight = maxHeight;
-    }
-  } else {
-    // HACK: for when opening up the editor UI in game mode
-    canvasWidth = Math.min(canvasWidth, 1200);
+    }, [windowWidth, windowHeight]);
   }
 
   var fullScreenStyle = {
     height: '100%',
     width: '100%',
-    maxWidth: maxWidth,
-    maxHeight: maxHeight,
     margin: 'auto',
     position: 'relative'
   };
   var nonFullScreenStyle = {
-    height: canvasHeight,
-    width: canvasWidth,
-    maxWidth: canvasWidth,
-    maxHeight: canvasHeight,
+    height: windowHeight,
+    width: windowWidth,
     position: 'absolute',
     top: 0,
     left: 0
@@ -186,14 +184,14 @@ function Canvas(props) {
   return React.createElement(
     'div',
     { id: 'canvasWrapper',
-      style: useFullScreen ? nonFullScreenStyle : fullScreenStyle
+      style: useFullScreen ? fullScreenStyle : nonFullScreenStyle
     },
     React.createElement('canvas', {
       id: 'canvas', style: {
         backgroundColor: 'white',
         cursor: 'pointer'
       },
-      width: canvasWidth, height: canvasHeight
+      width: windowWidth, height: windowHeight
     })
   );
 }
@@ -265,13 +263,15 @@ var Graph = function Graph(props) {
     'div',
     {
       style: {
-        border: '1px solid black'
+        border: '1px solid black',
+        width: 500,
+        height: 400
       }
     },
     React.createElement(Canvas, {
       useFullScreen: false,
-      windowWidth: 500,
-      windowHeight: 400
+      width: 500,
+      height: 400
     })
   );
 };
