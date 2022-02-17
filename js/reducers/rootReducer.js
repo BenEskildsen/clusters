@@ -1,11 +1,5 @@
 // @flow
 
-const {gameReducer} = require('./gameReducer');
-const {modalReducer} = require('./modalReducer');
-const {config} = require('../config');
-const {deepCopy} = require('../utils/helpers');
-const {totalPopulation} = require('../selectors/selectors');
-
 import type {State, Action} from '../types';
 
 const rootReducer = (state: State, action: Action): State => {
@@ -56,30 +50,7 @@ const rootReducer = (state: State, action: Action): State => {
 // Initializations
 const initState = () => {
   return {
-    screen: 'LOBBY',
-    game: null,
   };
-}
-
-const initGameState = () => {
-  const game = {
-    commodities: config.commodities.map(c => deepCopy(c)),
-    capital: config.capital,
-    labor: config.labor,
-    wages: config.wages,
-    unrest: config.unrest,
-    ticksSinceUnrest: 0,
-    laborSavings: config.laborSavings,
-    people: [],
-    ticker: ['Welcome to The Command Economy'],
-    time: 0,
-  };
-
-  for (const commodity of game.commodities) {
-    commodity.demand = commodity.demandFn(game, commodity.price, totalPopulation(game));
-  }
-
-  return game;
 }
 
 module.exports = {rootReducer};

@@ -1,9 +1,8 @@
 - npm
-  - install dependencies
+  - get server files in
 
 - canvas
-  - use canvas from base game
-    - check how it integrates
+  - fix styling
   - make canvas into a UI component and require it
   - screen resolution-flexible
 

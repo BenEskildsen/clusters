@@ -2,7 +2,7 @@
 
 const React = require('react');
 const {Button, Modal} = require('bens_ui_components');
-const Canvas = require('./Canvas');
+const Canvas = require('./Canvas.react');
 
 import type {State, Action} from '../types';
 

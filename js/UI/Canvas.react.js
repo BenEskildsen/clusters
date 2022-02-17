@@ -73,10 +73,10 @@ function Canvas(props: Props) {
     position: 'relative',
   };
   const nonFullScreenStyle = {
-    height: config.canvasHeight,
-    width: config.canvasWidth,
-    maxWidth: config.canvasWidth,
-    maxHeight: config.canvasHeight,
+    height: canvasHeight,
+    width: canvasWidth,
+    maxWidth: canvasWidth,
+    maxHeight: canvasHeight,
     position: 'absolute',
     top: 0,
     left: 0,
@@ -91,7 +91,7 @@ function Canvas(props: Props) {
           backgroundColor: 'white',
           cursor: 'pointer',
         }}
-        width={config.canvasWidth} height={config.canvasHeight}
+        width={canvasWidth} height={canvasHeight}
       />
     </div>
   );
