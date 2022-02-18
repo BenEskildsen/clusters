@@ -1,8 +1,7 @@
 // @flow
 
 const React = require('react');
-const {Button, Modal} = require('bens_ui_components');
-const Canvas = require('./Canvas.react');
+const {Button, Canvas} = require('bens_ui_components');
 
 import type {State, Action} from '../types';
 
@@ -50,9 +49,7 @@ const Graph = (props) => {
       }}
     >
       <Canvas
-        useFullScreen={false}
-        width={500}
-        height={400}
+        useFullScreen={true}
       />
 
     </div>

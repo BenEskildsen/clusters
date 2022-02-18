@@ -27,7 +27,7 @@ function renderUI(store) {
     modal: state.modal
   }), document.getElementById('container'));
 }
-},{"./reducers/rootReducer":2,"./ui/Main.react":4,"react":33,"react-dom":30,"redux":34}],2:[function(require,module,exports){
+},{"./reducers/rootReducer":2,"./ui/Main.react":3,"react":33,"react-dom":30,"redux":34}],2:[function(require,module,exports){
 'use strict';
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -90,6 +90,278 @@ module.exports = { rootReducer: rootReducer };
 },{}],3:[function(require,module,exports){
 'use strict';
 
+var React = require('react');
+
+var _require = require('bens_ui_components'),
+    Button = _require.Button,
+    Canvas = _require.Canvas;
+
+function Main(props) {
+  var state = props.state;
+
+
+  return React.createElement(
+    'div',
+    {
+      style: {}
+    },
+    React.createElement(Graph, null)
+  );
+}
+
+var Graph = function Graph(props) {
+  var points = props.points,
+      xAxis = props.xAxis,
+      yAxis = props.yAxis;
+
+
+  return React.createElement(
+    'div',
+    {
+      style: {
+        border: '1px solid black',
+        width: 500,
+        height: 400
+      }
+    },
+    React.createElement(Canvas, {
+      useFullScreen: true
+    })
+  );
+};
+
+module.exports = Main;
+},{"bens_ui_components":19,"react":33}],4:[function(require,module,exports){
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+module.exports = _defineProperty, module.exports.__esModule = true, module.exports["default"] = module.exports;
+},{}],5:[function(require,module,exports){
+var defineProperty = require("./defineProperty.js");
+
+function ownKeys(object, enumerableOnly) {
+  var keys = Object.keys(object);
+
+  if (Object.getOwnPropertySymbols) {
+    var symbols = Object.getOwnPropertySymbols(object);
+    enumerableOnly && (symbols = symbols.filter(function (sym) {
+      return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+    })), keys.push.apply(keys, symbols);
+  }
+
+  return keys;
+}
+
+function _objectSpread2(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = null != arguments[i] ? arguments[i] : {};
+    i % 2 ? ownKeys(Object(source), !0).forEach(function (key) {
+      defineProperty(target, key, source[key]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) {
+      Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+    });
+  }
+
+  return target;
+}
+
+module.exports = _objectSpread2, module.exports.__esModule = true, module.exports["default"] = module.exports;
+},{"./defineProperty.js":4}],6:[function(require,module,exports){
+'use strict';
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var React = require('react');
+var Button = require('./Button.react');
+var useState = React.useState,
+    useEffect = React.useEffect,
+    useMemo = React.useMemo;
+
+/**
+ * Props:
+ *
+ * audioFiles, // array of {path, type} pairs
+ * isMuted, // optional boolean for outside control of this widget
+ * setIsMuted, // optional function called when this is toggled
+ * isShuffled, // optional boolean for whether audio should play in random order
+ * style, // optional object of css styles
+ *
+ */
+
+var AudioWidget = function AudioWidget(props) {
+  var _useState = useState(!!props.isMuted),
+      _useState2 = _slicedToArray(_useState, 2),
+      isMuted = _useState2[0],
+      setIsMuted = _useState2[1];
+
+  var _useState3 = useState(0),
+      _useState4 = _slicedToArray(_useState3, 2),
+      playIndex = _useState4[0],
+      setPlayIndex = _useState4[1];
+
+  var playOrder = useMemo(function () {
+    var array = props.audioFiles.map(function (a, i) {
+      return i;
+    });
+    if (props.isShuffled) {
+      for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+      }
+      // initialOrder.sort(() => (Math.random() > 0.5) ? 1 : -1)
+    }
+    return array;
+  }, [props.audioFiles]);
+
+  var widgetStyle = {
+    margin: 5,
+    borderRadius: 8,
+    left: 5
+  };
+
+  // player
+  var audioPlayer = useMemo(function () {
+    var a = new Audio(props.audioFiles[playIndex].path);
+    return a;
+  }, [playIndex, isMuted, props.audioFiles]);
+
+  useEffect(function () {
+    if (!isMuted) {
+      audioPlayer.addEventListener('loadeddata', function () {
+        audioPlayer.play();
+        setTimeout(function () {
+          return setPlayIndex((playIndex + 1) % props.audioFiles.length);
+        }, audioPlayer.duration * 1000);
+      });
+    }
+    return function () {
+      audioPlayer.pause();
+    };
+  }, [playIndex, isMuted, props.audioFiles, audioPlayer]);
+
+  return React.createElement(
+    'div',
+    {
+      style: props.style ? props.style : widgetStyle
+    },
+    React.createElement(Button, {
+      label: isMuted ? 'Turn Music ON' : 'Turn Music OFF',
+      onClick: function onClick() {
+        audioPlayer.pause();
+        setIsMuted(!isMuted);
+        if (props.setIsMuted) {
+          props.setIsMuted(!isMuted);
+        }
+      }
+    })
+  );
+};
+
+module.exports = AudioWidget;
+},{"./Button.react":7,"react":33}],7:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var React = require('react');
+var useState = React.useState,
+    useEffect = React.useEffect;
+
+// props:
+// id: ?string
+// label: string
+// onClick: () => void
+// onMouseDown: optional () => void
+// onMouseUp: optional () => void
+// disabled: optional boolean
+// style: optional Object
+
+function Button(props) {
+  var id = props.id || props.label;
+
+  var touchFn = function touchFn() {
+    if (props.onMouseDown != null) {
+      props.onMouseDown();
+    } else {
+      props.onClick();
+    }
+  };
+
+  var _useState = useState(null),
+      _useState2 = _slicedToArray(_useState, 2),
+      intervalID = _useState2[0],
+      setIntervalID = _useState2[1];
+
+  return React.createElement(
+    'button',
+    { type: 'button',
+      style: _extends({
+        touchAction: 'initial',
+        fontSize: '18px'
+      }, props.style),
+      key: id || label,
+      className: props.disabled ? 'buttonDisable' : '',
+      id: id.toUpperCase() + '_button',
+      onClick: props.disabled ? function () {} : props.onClick,
+      onTouchStart: function onTouchStart(ev) {
+        ev.preventDefault();
+        if (props.disabled) {
+          return;
+        }
+        if (intervalID) {
+          console.log("already in interval, clearing");
+          clearInterval(intervalID);
+          setIntervalID(null);
+        }
+        touchFn();
+        // HACK: if you set the right condition, allow repetive presses
+        if (false) {
+          var interval = setInterval(touchFn, 120);
+          setIntervalID(interval);
+        }
+      },
+      onTouchEnd: function onTouchEnd(ev) {
+        ev.preventDefault();
+        clearInterval(intervalID);
+        setIntervalID(null);
+        props.onMouseUp;
+      },
+      onTouchCancel: function onTouchCancel(ev) {
+        clearInterval(intervalID);
+        setIntervalID(null);
+        props.onMouseUp;
+      },
+      onTouchMove: function onTouchMove(ev) {
+        ev.preventDefault();
+      },
+      onMouseDown: props.onMouseDown,
+      onMouseUp: props.onMouseUp,
+      disabled: props.disabled
+    },
+    props.label
+  );
+}
+
+module.exports = Button;
+},{"react":33}],8:[function(require,module,exports){
+'use strict';
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
@@ -111,13 +383,9 @@ function Canvas(props) {
   var useFullScreen = props.useFullScreen,
       width = props.width,
       height = props.height,
-      focus = props.focus,
       cellSize = props.cellSize,
-      dispatch = props.dispatch;
-
-  // calculate max canvas width (allows canvas sizing DOWN)
-  // let windowHeight = Math.min(2000, windowHeight, windowWidth * 1.33);
-  // let windowWidth = windowHeight * 0.75;
+      dispatch = props.dispatch,
+      focus = props.focus;
 
   var _useState = useState(width ? width : window.innerWidth),
       _useState2 = _slicedToArray(_useState, 2),
@@ -229,282 +497,6 @@ function withPropsChecker(WrappedComponent) {
 }
 
 module.exports = React.memo(Canvas);
-},{"react":33}],4:[function(require,module,exports){
-'use strict';
-
-var React = require('react');
-
-var _require = require('bens_ui_components'),
-    Button = _require.Button,
-    Modal = _require.Modal;
-
-var Canvas = require('./Canvas.react');
-
-function Main(props) {
-  var state = props.state;
-
-
-  return React.createElement(
-    'div',
-    {
-      style: {}
-    },
-    React.createElement(Graph, null)
-  );
-}
-
-var Graph = function Graph(props) {
-  var points = props.points,
-      xAxis = props.xAxis,
-      yAxis = props.yAxis;
-
-
-  return React.createElement(
-    'div',
-    {
-      style: {
-        border: '1px solid black',
-        width: 500,
-        height: 400
-      }
-    },
-    React.createElement(Canvas, {
-      useFullScreen: false,
-      width: 500,
-      height: 400
-    })
-  );
-};
-
-module.exports = Main;
-},{"./Canvas.react":3,"bens_ui_components":19,"react":33}],5:[function(require,module,exports){
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-
-  return obj;
-}
-
-module.exports = _defineProperty, module.exports.__esModule = true, module.exports["default"] = module.exports;
-},{}],6:[function(require,module,exports){
-var defineProperty = require("./defineProperty.js");
-
-function ownKeys(object, enumerableOnly) {
-  var keys = Object.keys(object);
-
-  if (Object.getOwnPropertySymbols) {
-    var symbols = Object.getOwnPropertySymbols(object);
-    enumerableOnly && (symbols = symbols.filter(function (sym) {
-      return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-    })), keys.push.apply(keys, symbols);
-  }
-
-  return keys;
-}
-
-function _objectSpread2(target) {
-  for (var i = 1; i < arguments.length; i++) {
-    var source = null != arguments[i] ? arguments[i] : {};
-    i % 2 ? ownKeys(Object(source), !0).forEach(function (key) {
-      defineProperty(target, key, source[key]);
-    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) {
-      Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-    });
-  }
-
-  return target;
-}
-
-module.exports = _objectSpread2, module.exports.__esModule = true, module.exports["default"] = module.exports;
-},{"./defineProperty.js":5}],7:[function(require,module,exports){
-'use strict';
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-var React = require('react');
-var Button = require('./Button.react');
-var useState = React.useState,
-    useEffect = React.useEffect,
-    useMemo = React.useMemo;
-
-/**
- * Props:
- *
- * audioFiles, // array of {path, type} pairs
- * isMuted, // optional boolean for outside control of this widget
- * setIsMuted, // optional function called when this is toggled
- * isShuffled, // optional boolean for whether audio should play in random order
- * style, // optional object of css styles
- *
- */
-
-var AudioWidget = function AudioWidget(props) {
-  var _useState = useState(!!props.isMuted),
-      _useState2 = _slicedToArray(_useState, 2),
-      isMuted = _useState2[0],
-      setIsMuted = _useState2[1];
-
-  var _useState3 = useState(0),
-      _useState4 = _slicedToArray(_useState3, 2),
-      playIndex = _useState4[0],
-      setPlayIndex = _useState4[1];
-
-  var playOrder = useMemo(function () {
-    var array = props.audioFiles.map(function (a, i) {
-      return i;
-    });
-    if (props.isShuffled) {
-      for (var i = array.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-      }
-      // initialOrder.sort(() => (Math.random() > 0.5) ? 1 : -1)
-    }
-    return array;
-  }, [props.audioFiles]);
-
-  var widgetStyle = {
-    margin: 5,
-    borderRadius: 8,
-    left: 5
-  };
-
-  // player
-  var audioPlayer = useMemo(function () {
-    var a = new Audio(props.audioFiles[playIndex].path);
-    return a;
-  }, [playIndex, isMuted, props.audioFiles]);
-
-  useEffect(function () {
-    if (!isMuted) {
-      audioPlayer.addEventListener('loadeddata', function () {
-        audioPlayer.play();
-        setTimeout(function () {
-          return setPlayIndex((playIndex + 1) % props.audioFiles.length);
-        }, audioPlayer.duration * 1000);
-      });
-    }
-    return function () {
-      audioPlayer.pause();
-    };
-  }, [playIndex, isMuted, props.audioFiles, audioPlayer]);
-
-  return React.createElement(
-    'div',
-    {
-      style: props.style ? props.style : widgetStyle
-    },
-    React.createElement(Button, {
-      label: isMuted ? 'Turn Music ON' : 'Turn Music OFF',
-      onClick: function onClick() {
-        audioPlayer.pause();
-        setIsMuted(!isMuted);
-        if (props.setIsMuted) {
-          props.setIsMuted(!isMuted);
-        }
-      }
-    })
-  );
-};
-
-module.exports = AudioWidget;
-},{"./Button.react":8,"react":33}],8:[function(require,module,exports){
-'use strict';
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-var React = require('react');
-var useState = React.useState,
-    useEffect = React.useEffect;
-
-// props:
-// id: ?string
-// label: string
-// onClick: () => void
-// onMouseDown: optional () => void
-// onMouseUp: optional () => void
-// disabled: optional boolean
-// style: optional Object
-
-function Button(props) {
-  var id = props.id || props.label;
-
-  var touchFn = function touchFn() {
-    if (props.onMouseDown != null) {
-      props.onMouseDown();
-    } else {
-      props.onClick();
-    }
-  };
-
-  var _useState = useState(null),
-      _useState2 = _slicedToArray(_useState, 2),
-      intervalID = _useState2[0],
-      setIntervalID = _useState2[1];
-
-  return React.createElement(
-    'button',
-    { type: 'button',
-      style: _extends({
-        touchAction: 'initial',
-        fontSize: '18px'
-      }, props.style),
-      key: id || label,
-      className: props.disabled ? 'buttonDisable' : '',
-      id: id.toUpperCase() + '_button',
-      onClick: props.disabled ? function () {} : props.onClick,
-      onTouchStart: function onTouchStart(ev) {
-        ev.preventDefault();
-        if (props.disabled) {
-          return;
-        }
-        if (intervalID) {
-          console.log("already in interval, clearing");
-          clearInterval(intervalID);
-          setIntervalID(null);
-        }
-        touchFn();
-        // HACK: if you set the right condition, allow repetive presses
-        if (false) {
-          var interval = setInterval(touchFn, 120);
-          setIntervalID(interval);
-        }
-      },
-      onTouchEnd: function onTouchEnd(ev) {
-        ev.preventDefault();
-        clearInterval(intervalID);
-        setIntervalID(null);
-        props.onMouseUp;
-      },
-      onTouchCancel: function onTouchCancel(ev) {
-        clearInterval(intervalID);
-        setIntervalID(null);
-        props.onMouseUp;
-      },
-      onTouchMove: function onTouchMove(ev) {
-        ev.preventDefault();
-      },
-      onMouseDown: props.onMouseDown,
-      onMouseUp: props.onMouseUp,
-      disabled: props.disabled
-    },
-    props.label
-  );
-}
-
-module.exports = Button;
 },{"react":33}],9:[function(require,module,exports){
 'use strict';
 
@@ -721,7 +713,7 @@ function Modal(props) {
 }
 
 module.exports = Modal;
-},{"./Button.react":8,"bens_utils":26,"react":33}],14:[function(require,module,exports){
+},{"./Button.react":7,"bens_utils":26,"react":33}],14:[function(require,module,exports){
 'use strict';
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
@@ -895,7 +887,7 @@ var quitGameModal = function quitGameModal(dispatch) {
 };
 
 module.exports = QuitButton;
-},{"./Button.react":8,"./Modal.react":13,"bens_utils":26,"react":33}],16:[function(require,module,exports){
+},{"./Button.react":7,"./Modal.react":13,"bens_utils":26,"react":33}],16:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1181,11 +1173,12 @@ function Table(props) {
 }
 
 module.exports = Table;
-},{"./Button.react":8,"react":33}],19:[function(require,module,exports){
+},{"./Button.react":7,"react":33}],19:[function(require,module,exports){
 
 module.exports = {
   AudioWidget: require('./bin/AudioWidget.react.js'),
   Button: require('./bin/Button.react.js'),
+  Canvas: require('./bin/Canvas.react.js'),
   Checkbox: require('./bin/Checkbox.react.js'),
   Divider: require('./bin/Divider.react.js'),
   Dropdown: require('./bin/Dropdown.react.js'),
@@ -1198,7 +1191,7 @@ module.exports = {
   Table: require('./bin/Table.react.js'),
 };
 
-},{"./bin/AudioWidget.react.js":7,"./bin/Button.react.js":8,"./bin/Checkbox.react.js":9,"./bin/Divider.react.js":10,"./bin/Dropdown.react.js":11,"./bin/InfoCard.react.js":12,"./bin/Modal.react.js":13,"./bin/NumberField.react.js":14,"./bin/QuitButton.react.js":15,"./bin/RadioPicker.react.js":16,"./bin/Slider.react.js":17,"./bin/Table.react.js":18}],20:[function(require,module,exports){
+},{"./bin/AudioWidget.react.js":6,"./bin/Button.react.js":7,"./bin/Canvas.react.js":8,"./bin/Checkbox.react.js":9,"./bin/Divider.react.js":10,"./bin/Dropdown.react.js":11,"./bin/InfoCard.react.js":12,"./bin/Modal.react.js":13,"./bin/NumberField.react.js":14,"./bin/QuitButton.react.js":15,"./bin/RadioPicker.react.js":16,"./bin/Slider.react.js":17,"./bin/Table.react.js":18}],20:[function(require,module,exports){
 'use strict';
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -31618,7 +31611,7 @@ exports.compose = compose;
 exports.createStore = createStore;
 
 }).call(this)}).call(this,require('_process'))
-},{"@babel/runtime/helpers/objectSpread2":6,"_process":41}],35:[function(require,module,exports){
+},{"@babel/runtime/helpers/objectSpread2":5,"_process":41}],35:[function(require,module,exports){
 (function (process){(function (){
 /** @license React v0.20.2
  * scheduler-tracing.development.js

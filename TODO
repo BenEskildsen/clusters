@@ -1,14 +1,11 @@
 - npm
   - get server files in
 
-- canvas
-  - make canvas into a UI component and require it
-
 - graph
   - takes in points and scales them to the canvas/axes
   - axes based on min and maxes of points
-  - labelled axes
-  - turn graph into UI component in the package
+    - drawn on canvas
+    - labelled axes
   - make graph into a UI component and require it
 
 - points
