@@ -2,6 +2,7 @@
 
 const React = require('react');
 const {Button, Canvas} = require('bens_ui_components');
+const Graph = require('./Graph.react');
 
 import type {State, Action} from '../types';
 
@@ -23,37 +24,19 @@ function Main(props: Props): React.Node {
       }}
     >
       <Graph
-
+        points={[
+          {x: 10, y: 10, cluster: 'red'}, {x: 15, y: 25},
+          {x: 50, y: 10}, {x: 25, y: 25, cluster: 'blue'},
+        ]}
+        xAxis={{
+          max: 100,
+        }}
+        yAxis={{
+          max: 100,
+        }}
       />
     </div>
   );
-}
-
-type axis = {
-  min: ?number,
-  max: ?number,
-  majorTicks: ?number,
-  minorTicks: ?number,
-  label: ?string,
-}
-
-const Graph = (props) => {
-  const {points, xAxis, yAxis} = props;
-
-  return (
-    <div
-      style={{
-        border: '1px solid black',
-        width: 500,
-        height: 400,
-      }}
-    >
-      <Canvas
-        useFullScreen={true}
-      />
-
-    </div>
-  )
 }
 
 module.exports = Main;

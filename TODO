@@ -2,14 +2,13 @@
   - get server files in
 
 - graph
-  - takes in points and scales them to the canvas/axes
-  - axes based on min and maxes of points
-    - drawn on canvas
-    - labelled axes
   - make graph into a UI component and require it
 
 - points
   - input field for json list of points + cluster
-  - coloring points based on cluster
   - click to add points
   - button to output points
+
+- axes
+  - drawn on canvas
+  - labelled axes
