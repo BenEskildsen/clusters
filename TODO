@@ -1,14 +1,12 @@
 - npm
   - get server files in
 
-- graph
-  - make graph into a UI component and require it
-
-- points
+- plot
+  - make plot into a UI component and require it
   - input field for json list of points + cluster
   - click to add points
-  - button to output points
 
 - axes
-  - drawn on canvas
+  - min and max
+  - major + minor ticks
   - labelled axes

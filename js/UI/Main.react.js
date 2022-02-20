@@ -2,20 +2,30 @@
 
 const React = require('react');
 const {Button, Canvas} = require('bens_ui_components');
-const Graph = require('./Graph.react');
+const Plot = require('./Plot.react');
+const {useState, useMemo, useEffect, useReducer} = React;
+const {plotReducer} = require('../reducers/plotReducer');
 
 import type {State, Action} from '../types';
 
 type Props = {
-  state: State, // Game State
-  dispatch: (action: Action) => Action,
-  store: Object,
 };
 
 function Main(props: Props): React.Node {
-  const {state} = props;
 
-
+  // state
+  const [state, dispatch] = useReducer(
+    plotReducer,
+    {
+      points: [
+        {x: 10, y: 10, color: 'red'}, {x: 15, y: 25},
+        {x: 50, y: 10}, {x: 25, y: 25, color: 'blue'},
+        {x: 0, y: 0}, {x: 100, y: 100},
+      ],
+      xAxis: {dimension: 'x', label: 'x', min: 0, max: 100},
+      yAxis: {dimension: 'y', label: 'y', min: 0, max: 100},
+    },
+  );
 
   return (
     <div
@@ -23,17 +33,20 @@ function Main(props: Props): React.Node {
 
       }}
     >
-      <Graph
-        points={[
-          {x: 10, y: 10, cluster: 'red'}, {x: 15, y: 25},
-          {x: 50, y: 10}, {x: 25, y: 25, cluster: 'blue'},
-        ]}
-        xAxis={{
-          max: 100,
-        }}
-        yAxis={{
-          max: 100,
-        }}
+      <Plot
+        points={state.points}
+        xAxis={state.xAxis}
+        yAxis={state.yAxis}
+        width={500}
+        height={400}
+      />
+      <Button
+        label="Clear Points"
+        onClick={() => dispatch({type: 'CLEAR_POINTS'})}
+      />
+      <Button
+        label="Print Points"
+        onClick={() => dispatch({type: 'PRINT_POINTS'})}
       />
     </div>
   );

@@ -5,7 +5,7 @@ import type {State, Action} from '../types';
 type Point = {
   x: number,
   y: number,
-  cluster: ?string, // color
+  color: ?string, // css color
 };
 
 type Axis = {
@@ -16,7 +16,7 @@ type Axis = {
 };
 
 
-const graphReducer = (state: State, action: Action): State=> {
+const plotReducer = (state: State, action: Action): State=> {
   switch (action.type) {
     case 'SET_AXIS':
       const {axis} = action;
@@ -44,7 +44,13 @@ const graphReducer = (state: State, action: Action): State=> {
         points: [],
       };
     }
+    case 'PRINT_POINTS': {
+      for (const point of state.points) {
+        console.log(point.x + "," + point.y);
+      }
+      return state;
+    }
   }
 }
 
-module.exports = {graphReducer};
+module.exports = {plotReducer};
