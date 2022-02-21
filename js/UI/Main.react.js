@@ -5,6 +5,7 @@ const {Button, Canvas} = require('bens_ui_components');
 const Plot = require('./Plot.react');
 const {useState, useMemo, useEffect, useReducer} = React;
 const {plotReducer} = require('../reducers/plotReducer');
+const {mouseControlsSystem, mouseReducer} = require('bens_reducers');
 
 import type {State, Action} from '../types';
 
@@ -13,7 +14,7 @@ type Props = {
 
 function Main(props: Props): React.Node {
 
-  // state
+  // plot state
   const [state, dispatch] = useReducer(
     plotReducer,
     {
@@ -27,6 +28,11 @@ function Main(props: Props): React.Node {
     },
   );
 
+  // mouse state
+  useEffect(() => {
+
+  }, []);
+
   return (
     <div
       style={{
@@ -37,8 +43,8 @@ function Main(props: Props): React.Node {
         points={state.points}
         xAxis={state.xAxis}
         yAxis={state.yAxis}
-        width={500}
-        height={400}
+        width={600}
+        height={500}
       />
       <Button
         label="Clear Points"

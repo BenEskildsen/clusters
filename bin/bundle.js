@@ -156,8 +156,8 @@ function Main(props) {
       points: state.points,
       xAxis: state.xAxis,
       yAxis: state.yAxis,
-      width: 500,
-      height: 400
+      useFullScreen: true,
+      isLinear: true
     }),
     React.createElement(Button, {
       label: 'Clear Points',
@@ -219,9 +219,15 @@ var Plot = function Plot(props) {
 
   useEffect(function () {
     function handleResize() {
+      console.log(resizeCount);
       setResize(resizeCount + 1);
     }
+    console.log("handle resize");
     window.addEventListener('resize', handleResize);
+    return function () {
+      console.log("removing listener");
+      window.removeEventListener('resize', handleResize);
+    };
   }, [resizeCount]);
 
   // rendering
@@ -620,10 +626,7 @@ function Canvas(props) {
   };
   var nonFullScreenStyle = {
     height: windowHeight,
-    width: windowWidth,
-    position: 'absolute',
-    top: 0,
-    left: 0
+    width: windowWidth
   };
 
   return React.createElement(

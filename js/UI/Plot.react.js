@@ -38,11 +38,15 @@ const Plot = (props) => {
 
   // screen resizing
   const [resizeCount, setResize] = useState(0);
+
   useEffect(() => {
     function handleResize() {
       setResize(resizeCount + 1);
     }
     window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
   }, [resizeCount]);
 
   // rendering

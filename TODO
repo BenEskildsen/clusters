@@ -1,12 +1,21 @@
 - npm
   - get server files in
 
+- cluster
+  - make the cluster itself into a configurable package
+    and require it
+
 - plot
-  - make plot into a UI component and require it
   - input field for json list of points + cluster
   - click to add points
+    - mouseControlsSystem shouldn't need store
+    - rename to remove "Control" from name
+    - shouldn't need game
+    - should be passed exact gridSpace and pixelSpace dimensions it needs
+    - mouseReducer should be usable via useReducer
+  - make plot into a UI component and require it
 
 - axes
-  - min and max
+  - min and max labels
   - major + minor ticks
   - labelled axes
