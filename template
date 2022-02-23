@@ -2,7 +2,7 @@
 # Copy the entire directory this file is in as the base for your game.
 # get rid of all the node_modules. Then run to get all these node files
 
-npm init
+# npm init
 
 # bens ui components
 sudo npm install bens_ui_components
@@ -35,16 +35,16 @@ sudo npm install --save redux
 # npm install topojson-client
 
 # eureca
-# sudo npm install eureca.io
-# sudo npm install wrtc
-# sudo npm install engine.io
+sudo npm install eureca.io
+sudo npm install wrtc
+sudo npm install engine.io
 # express
-# npm install express --save
+npm install express --save
 # clientside REST
 # npm install axios
 
 # postgres
-# npm install pg
+npm install pg
 
 # react native server
 # npm install -g expo-cli
