@@ -39,12 +39,12 @@ sudo npm install eureca.io
 sudo npm install wrtc
 sudo npm install engine.io
 # express
-npm install express --save
+sudo npm install express --save
 # clientside REST
 # npm install axios
 
 # postgres
-npm install pg
+sudo npm install pg
 
 # react native server
 # npm install -g expo-cli

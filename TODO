@@ -1,5 +1,3 @@
-- npm
-  - get server files in
 
 - cluster
   - make the cluster itself into a configurable package
