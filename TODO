@@ -1,10 +1,7 @@
 
-- cluster
-  - make the cluster itself into a configurable package
-    and require it
-
 - plot
-  - input field for json list of points + cluster
+  - input field for csv list of points + cluster
+  - canvas ID needs to be settable in its own package
   - click to add points
     - mouseControlsSystem shouldn't need store
     - rename to remove "Control" from name
@@ -12,6 +9,7 @@
     - should be passed exact gridSpace and pixelSpace dimensions it needs
     - mouseReducer should be usable via useReducer
   - make plot into a UI component and require it
+    (after axes are reasonable)
 
 - axes
   - min and max labels
