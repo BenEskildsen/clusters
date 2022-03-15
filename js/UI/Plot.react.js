@@ -17,6 +17,8 @@ type Axis = {
   label: string,
   min: ?number,
   max: ?number,
+  majorTicks: ?number,
+  minorTicks: ?number,
 };
 
 /**
@@ -58,14 +60,33 @@ const Plot = (props) => {
     const {points, xAxis, yAxis, isLinear} = props;
     const {width, height} = canvas.getBoundingClientRect();
 
+    // clear canvas
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, width, height);
 
+    // drawing axes
+    ctx.fillStyle = 'black';
+    const xMajor = xAxis.majorTicks || 10;
+    for (let x = xAxis.min; x < xAxis.max; x += xMajor) {
+      drawLine(ctx, {x, y: height}, {x, y: height - 20});
+    }
+    const xMinor = xAxis.minorTicks || 2;
+    for (let x = xAxis.min; x < xAxis.max; x += xMinor) {
+      drawLine(ctx, {x, y: height}, {x, y: height - 10});
+    }
+    const yMajor = yAxis.majorTicks || 10;
+    for (let y = yAxis.min; y < yAxis.max; y += yMajor) {
+      drawLine(ctx, {x: 0, y}, {x: 20, y});
+    }
+    const yMinor = yAxis.minorTicks || 2;
+    for (let y = yAxis.min; y < yAxis.max; y += yMinor) {
+      drawLine(ctx, {x: 0, y}, {x: 10, y});
+    }
+
+    // drawing points
     const xTrans = width / (xAxis.max - xAxis.min);
     const yTrans = height / (yAxis.max - yAxis.min);
-
     const sortedPoints = [...points].sort((a, b) => a.x - b.x);
-
     let prevPoint = null;
     for (const point of sortedPoints) {
       ctx.fillStyle = point.color ? point.color : 'black';
@@ -76,14 +97,11 @@ const Plot = (props) => {
 
       if (isLinear && prevPoint != null) {
         ctx.fillStyle = 'black';
-        ctx.beginPath();
-        ctx.moveTo(prevPoint.x, prevPoint.y);
-        ctx.lineTo(x, y);
-        ctx.stroke();
-        ctx.closePath();
+        drawLine(ctx, prevPoint, {x, y});
       }
       prevPoint = {x, y};
     }
+
   }, [props, resizeCount]);
 
   return (
@@ -100,5 +118,13 @@ const Plot = (props) => {
     </div>
   )
 }
+
+const drawLine = (ctx, p1, p2) => {
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y);
+    ctx.lineTo(p2.x, p2.y);
+    ctx.stroke();
+    ctx.closePath();
+};
 
 module.exports = Plot;
