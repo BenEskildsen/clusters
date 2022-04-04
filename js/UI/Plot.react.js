@@ -60,6 +60,12 @@ const Plot = (props) => {
     const {points, xAxis, yAxis, isLinear} = props;
     const {width, height} = canvas.getBoundingClientRect();
 
+    // scaling points to canvas
+    const xTrans = width / (xAxis.max - xAxis.min);
+    const yTrans = height / (yAxis.max - yAxis.min);
+    const transX = (x) => x * xTrans - xAxis.min * xTrans;
+    const transY = (y) => y * yTrans - yAxis.min * yTrans;
+
     // clear canvas
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, width, height);
@@ -68,29 +74,27 @@ const Plot = (props) => {
     ctx.fillStyle = 'black';
     const xMajor = xAxis.majorTicks || 10;
     for (let x = xAxis.min; x < xAxis.max; x += xMajor) {
-      drawLine(ctx, {x, y: height}, {x, y: height - 20});
+      drawLine(ctx, {x: transX(x), y: height}, {x: transX(x), y: height - 20});
     }
     const xMinor = xAxis.minorTicks || 2;
     for (let x = xAxis.min; x < xAxis.max; x += xMinor) {
-      drawLine(ctx, {x, y: height}, {x, y: height - 10});
+      drawLine(ctx, {x: transX(x), y: height}, {x: transX(x), y: height - 10});
     }
     const yMajor = yAxis.majorTicks || 10;
     for (let y = yAxis.min; y < yAxis.max; y += yMajor) {
-      drawLine(ctx, {x: 0, y}, {x: 20, y});
+      drawLine(ctx, {x: 0, y: transY(y)}, {x: 20, y: transY(y)});
     }
     const yMinor = yAxis.minorTicks || 2;
     for (let y = yAxis.min; y < yAxis.max; y += yMinor) {
-      drawLine(ctx, {x: 0, y}, {x: 10, y});
+      drawLine(ctx, {x: 0, y: transY(y)}, {x: 10, y: transY(y)});
     }
 
     // drawing points
-    const xTrans = width / (xAxis.max - xAxis.min);
-    const yTrans = height / (yAxis.max - yAxis.min);
     const sortedPoints = [...points].sort((a, b) => a.x - b.x);
     let prevPoint = null;
     for (const point of sortedPoints) {
       ctx.fillStyle = point.color ? point.color : 'black';
-      const x = point.x * xTrans - xAxis.min * xTrans;
+      const x = transX(point.x);
       const y = yAxis.max * yTrans - yAxis.min * yTrans - point.y * yTrans;
       const size = 2;
       ctx.fillRect(x - size, y - size, size * 2, size * 2);

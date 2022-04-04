@@ -25,6 +25,7 @@ function Main(props: Props): React.Node {
       ],
       xAxis: {dimension: 'x', label: 'x', min: 0, max: 100},
       yAxis: {dimension: 'y', label: 'y', min: 0, max: 100},
+      isLinear: true,
     },
   );
 
@@ -45,6 +46,7 @@ function Main(props: Props): React.Node {
         yAxis={state.yAxis}
         width={600}
         height={500}
+        isLinear={state.isLinear}
       />
       <Button
         label="Clear Points"

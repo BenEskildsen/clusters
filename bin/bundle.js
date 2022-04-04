@@ -8,6 +8,8 @@ var ReactDOM = require('react-dom');
 function renderUI() {
   ReactDOM.render(React.createElement(Main, null), document.getElementById('container'));
 }
+
+renderUI();
 },{"./ui/Main.react":3,"react":32,"react-dom":29}],2:[function(require,module,exports){
 'use strict';
 
@@ -104,7 +106,8 @@ function Main(props) {
   var _useReducer = useReducer(plotReducer, {
     points: [{ x: 10, y: 10, color: 'red' }, { x: 15, y: 25 }, { x: 50, y: 10 }, { x: 25, y: 25, color: 'blue' }, { x: 0, y: 0 }, { x: 100, y: 100 }],
     xAxis: { dimension: 'x', label: 'x', min: 0, max: 100 },
-    yAxis: { dimension: 'y', label: 'y', min: 0, max: 100 }
+    yAxis: { dimension: 'y', label: 'y', min: 0, max: 100 },
+    isLinear: true
   }),
       _useReducer2 = _slicedToArray(_useReducer, 2),
       state = _useReducer2[0],
@@ -125,7 +128,8 @@ function Main(props) {
       xAxis: state.xAxis,
       yAxis: state.yAxis,
       width: 600,
-      height: 500
+      height: 500,
+      isLinear: state.isLinear
     }),
     React.createElement(Button, {
       label: 'Clear Points',
@@ -210,9 +214,19 @@ var Plot = function Plot(props) {
         width = _canvas$getBoundingCl.width,
         height = _canvas$getBoundingCl.height;
 
+    // scaling points to canvas
+
+
+    var xTrans = width / (xAxis.max - xAxis.min);
+    var yTrans = height / (yAxis.max - yAxis.min);
+    var transX = function transX(x) {
+      return x * xTrans - xAxis.min * xTrans;
+    };
+    var transY = function transY(y) {
+      return y * yTrans - yAxis.min * yTrans;
+    };
+
     // clear canvas
-
-
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, width, height);
 
@@ -220,24 +234,22 @@ var Plot = function Plot(props) {
     ctx.fillStyle = 'black';
     var xMajor = xAxis.majorTicks || 10;
     for (var _x = xAxis.min; _x < xAxis.max; _x += xMajor) {
-      drawLine(ctx, { x: _x, y: height }, { x: _x, y: height - 20 });
+      drawLine(ctx, { x: transX(_x), y: height }, { x: transX(_x), y: height - 20 });
     }
     var xMinor = xAxis.minorTicks || 2;
     for (var _x2 = xAxis.min; _x2 < xAxis.max; _x2 += xMinor) {
-      drawLine(ctx, { x: _x2, y: height }, { x: _x2, y: height - 10 });
+      drawLine(ctx, { x: transX(_x2), y: height }, { x: transX(_x2), y: height - 10 });
     }
     var yMajor = yAxis.majorTicks || 10;
     for (var _y = yAxis.min; _y < yAxis.max; _y += yMajor) {
-      drawLine(ctx, { x: 0, y: _y }, { x: 20, y: _y });
+      drawLine(ctx, { x: 0, y: transY(_y) }, { x: 20, y: transY(_y) });
     }
     var yMinor = yAxis.minorTicks || 2;
     for (var _y2 = yAxis.min; _y2 < yAxis.max; _y2 += yMinor) {
-      drawLine(ctx, { x: 0, y: _y2 }, { x: 10, y: _y2 });
+      drawLine(ctx, { x: 0, y: transY(_y2) }, { x: 10, y: transY(_y2) });
     }
 
     // drawing points
-    var xTrans = width / (xAxis.max - xAxis.min);
-    var yTrans = height / (yAxis.max - yAxis.min);
     var sortedPoints = [].concat(_toConsumableArray(points)).sort(function (a, b) {
       return a.x - b.x;
     });
@@ -251,7 +263,7 @@ var Plot = function Plot(props) {
         var point = _step.value;
 
         ctx.fillStyle = point.color ? point.color : 'black';
-        var _x3 = point.x * xTrans - xAxis.min * xTrans;
+        var _x3 = transX(point.x);
         var _y3 = yAxis.max * yTrans - yAxis.min * yTrans - point.y * yTrans;
         var size = 2;
         ctx.fillRect(_x3 - size, _y3 - size, size * 2, size * 2);

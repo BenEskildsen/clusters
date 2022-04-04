@@ -13,3 +13,5 @@ function renderUI() {
   );
 }
 
+renderUI();
+
