@@ -290,16 +290,47 @@ var Plot = function Plot(props) {
     }
   }, [props, resizeCount]);
 
+  var xAxisLabel = null;
+  var yAxisLabel = null;
+  if (props.xAxis.label != null) {
+    xAxisLabel = React.createElement(
+      'div',
+      { style: {
+          textAlign: 'center'
+        } },
+      props.xAxis.label
+    );
+  }
+  if (props.yAxis.label != null) {
+    yAxisLabel = React.createElement(
+      'div',
+      { style: {
+          display: 'table-cell',
+          verticalAlign: 'middle'
+        } },
+      props.yAxis.label
+    );
+  }
+
   return React.createElement(
     'div',
     {
-      style: {}
+      style: {
+        width: 'fit-content',
+        display: 'table'
+      }
     },
-    React.createElement(Canvas, {
-      useFullScreen: props.useFullScreen,
-      width: props.width,
-      height: props.height
-    })
+    yAxisLabel,
+    React.createElement(
+      'div',
+      { style: { display: 'inline-block' } },
+      React.createElement(Canvas, {
+        useFullScreen: props.useFullScreen,
+        width: props.width,
+        height: props.height
+      })
+    ),
+    xAxisLabel
   );
 };
 

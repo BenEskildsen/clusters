@@ -1,7 +1,4 @@
 
-- fix page not loading
-  - server.js is correct
-
 - plot
   - input field for csv list of points + cluster
   - canvas ID needs to be settable in its own package
@@ -16,5 +13,3 @@
 
 - axes
   - min and max labels
-  - major + minor ticks
-  - labelled axes

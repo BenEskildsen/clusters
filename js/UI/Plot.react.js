@@ -108,17 +108,44 @@ const Plot = (props) => {
 
   }, [props, resizeCount]);
 
+  let xAxisLabel = null;
+  let yAxisLabel = null;
+  if (props.xAxis.label != null) {
+    xAxisLabel = (
+      <div style={{
+        textAlign: 'center',
+      }}>
+        {props.xAxis.label}
+      </div>
+    );
+  }
+  if (props.yAxis.label != null) {
+    yAxisLabel = (
+      <div style={{
+        display: 'table-cell',
+        verticalAlign: 'middle',
+      }}>
+        {props.yAxis.label}
+      </div>
+    );
+  }
+
   return (
     <div
       style={{
+        width: 'fit-content',
+        display: 'table',
       }}
     >
-      <Canvas
-        useFullScreen={props.useFullScreen}
-        width={props.width}
-        height={props.height}
-      />
-
+      {yAxisLabel}
+      <div style={{display: 'inline-block'}}>
+        <Canvas
+          useFullScreen={props.useFullScreen}
+          width={props.width}
+          height={props.height}
+        />
+      </div>
+      {xAxisLabel}
     </div>
   )
 }
