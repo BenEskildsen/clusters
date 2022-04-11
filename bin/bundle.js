@@ -10,76 +10,7 @@ function renderUI() {
 }
 
 renderUI();
-},{"./ui/Main.react":3,"react":32,"react-dom":29}],2:[function(require,module,exports){
-'use strict';
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var plotReducer = function plotReducer(state, action) {
-  switch (action.type) {
-    case 'SET_AXIS':
-      var axis = action.axis;
-
-      var whichAxis = axis.dimension == 'x' ? 'xAxis' : 'yAxis';
-      return _extends({}, state, _defineProperty({}, whichAxis, _extends({ label: axis.dimension, min: 0, max: 100 }, axis)));
-    case 'SET_POINTS':
-      var points = action.points;
-
-      return _extends({}, state, {
-        points: points
-      });
-    case 'ADD_POINTS':
-      {
-        var _points = action.points;
-
-        return _extends({}, state, {
-          points: state.points ? [].concat(_toConsumableArray(state.points), _toConsumableArray(_points)) : _points
-        });
-      }
-    case 'CLEAR_POINTS':
-      {
-        return _extends({}, state, {
-          points: []
-        });
-      }
-    case 'PRINT_POINTS':
-      {
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-          for (var _iterator = state.points[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var point = _step.value;
-
-            console.log(point.x + "," + point.y);
-          }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
-            }
-          }
-        }
-
-        return state;
-      }
-  }
-};
-
-module.exports = { plotReducer: plotReducer };
-},{}],3:[function(require,module,exports){
+},{"./ui/Main.react":2,"react":32,"react-dom":29}],2:[function(require,module,exports){
 'use strict';
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
@@ -88,16 +19,14 @@ var React = require('react');
 
 var _require = require('bens_ui_components'),
     Button = _require.Button,
-    Canvas = _require.Canvas;
+    Canvas = _require.Canvas,
+    Plot = _require.Plot,
+    plotReducer = _require.plotReducer;
 
-var Plot = require('./Plot.react');
 var useState = React.useState,
     useMemo = React.useMemo,
     useEffect = React.useEffect,
     useReducer = React.useReducer;
-
-var _require2 = require('../reducers/plotReducer'),
-    plotReducer = _require2.plotReducer;
 // const {mouseControlsSystem, mouseReducer} = require('bens_reducers');
 
 function Main(props) {
@@ -147,203 +76,7 @@ function Main(props) {
 }
 
 module.exports = Main;
-},{"../reducers/plotReducer":2,"./Plot.react":4,"bens_ui_components":18,"react":32}],4:[function(require,module,exports){
-'use strict';
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-var React = require('react');
-
-var _require = require('bens_ui_components'),
-    Button = _require.Button,
-    Canvas = _require.Canvas;
-
-var useState = React.useState,
-    useMemo = React.useMemo,
-    useEffect = React.useEffect,
-    useReducer = React.useReducer;
-
-
-/**
- * NOTE: 0, 0 is the bottom left corner
- *
- * props:
- *   points: Array<Point>,
- *   xAxis: Axis,
- *   yAxis: Axis,
- *   isLinear: boolean,
- *
- * canvas props:
- *   useFullScreen: boolean,
- *   width: number,
- *   height: number,
- */
-
-var Plot = function Plot(props) {
-
-  // screen resizing
-  var _useState = useState(0),
-      _useState2 = _slicedToArray(_useState, 2),
-      resizeCount = _useState2[0],
-      setResize = _useState2[1];
-
-  useEffect(function () {
-    function handleResize() {
-      setResize(resizeCount + 1);
-    }
-    window.addEventListener('resize', handleResize);
-    return function () {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [resizeCount]);
-
-  // rendering
-  useEffect(function () {
-    var canvas = document.getElementById('canvas');
-    if (!canvas) return;
-    var ctx = canvas.getContext('2d');
-
-    var points = props.points,
-        xAxis = props.xAxis,
-        yAxis = props.yAxis,
-        isLinear = props.isLinear;
-
-    var _canvas$getBoundingCl = canvas.getBoundingClientRect(),
-        width = _canvas$getBoundingCl.width,
-        height = _canvas$getBoundingCl.height;
-
-    // scaling points to canvas
-
-
-    var xTrans = width / (xAxis.max - xAxis.min);
-    var yTrans = height / (yAxis.max - yAxis.min);
-    var transX = function transX(x) {
-      return x * xTrans - xAxis.min * xTrans;
-    };
-    var transY = function transY(y) {
-      return y * yTrans - yAxis.min * yTrans;
-    };
-
-    // clear canvas
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, width, height);
-
-    // drawing axes
-    ctx.fillStyle = 'black';
-    var xMajor = xAxis.majorTicks || 10;
-    for (var _x = xAxis.min; _x < xAxis.max; _x += xMajor) {
-      drawLine(ctx, { x: transX(_x), y: height }, { x: transX(_x), y: height - 20 });
-    }
-    var xMinor = xAxis.minorTicks || 2;
-    for (var _x2 = xAxis.min; _x2 < xAxis.max; _x2 += xMinor) {
-      drawLine(ctx, { x: transX(_x2), y: height }, { x: transX(_x2), y: height - 10 });
-    }
-    var yMajor = yAxis.majorTicks || 10;
-    for (var _y = yAxis.min; _y < yAxis.max; _y += yMajor) {
-      drawLine(ctx, { x: 0, y: transY(_y) }, { x: 20, y: transY(_y) });
-    }
-    var yMinor = yAxis.minorTicks || 2;
-    for (var _y2 = yAxis.min; _y2 < yAxis.max; _y2 += yMinor) {
-      drawLine(ctx, { x: 0, y: transY(_y2) }, { x: 10, y: transY(_y2) });
-    }
-
-    // drawing points
-    var sortedPoints = [].concat(_toConsumableArray(points)).sort(function (a, b) {
-      return a.x - b.x;
-    });
-    var prevPoint = null;
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
-
-    try {
-      for (var _iterator = sortedPoints[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-        var point = _step.value;
-
-        ctx.fillStyle = point.color ? point.color : 'black';
-        var _x3 = transX(point.x);
-        var _y3 = yAxis.max * yTrans - yAxis.min * yTrans - point.y * yTrans;
-        var size = 2;
-        ctx.fillRect(_x3 - size, _y3 - size, size * 2, size * 2);
-
-        if (isLinear && prevPoint != null) {
-          ctx.fillStyle = 'black';
-          drawLine(ctx, prevPoint, { x: _x3, y: _y3 });
-        }
-        prevPoint = { x: _x3, y: _y3 };
-      }
-    } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion && _iterator.return) {
-          _iterator.return();
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
-      }
-    }
-  }, [props, resizeCount]);
-
-  var xAxisLabel = null;
-  var yAxisLabel = null;
-  if (props.xAxis.label != null) {
-    xAxisLabel = React.createElement(
-      'div',
-      { style: {
-          textAlign: 'center'
-        } },
-      props.xAxis.label
-    );
-  }
-  if (props.yAxis.label != null) {
-    yAxisLabel = React.createElement(
-      'div',
-      { style: {
-          display: 'table-cell',
-          verticalAlign: 'middle'
-        } },
-      props.yAxis.label
-    );
-  }
-
-  return React.createElement(
-    'div',
-    {
-      style: {
-        width: 'fit-content',
-        display: 'table'
-      }
-    },
-    yAxisLabel,
-    React.createElement(
-      'div',
-      { style: { display: 'inline-block' } },
-      React.createElement(Canvas, {
-        useFullScreen: props.useFullScreen,
-        width: props.width,
-        height: props.height
-      })
-    ),
-    xAxisLabel
-  );
-};
-
-var drawLine = function drawLine(ctx, p1, p2) {
-  ctx.beginPath();
-  ctx.moveTo(p1.x, p1.y);
-  ctx.lineTo(p2.x, p2.y);
-  ctx.stroke();
-  ctx.closePath();
-};
-
-module.exports = Plot;
-},{"bens_ui_components":18,"react":32}],5:[function(require,module,exports){
+},{"bens_ui_components":18,"react":32}],3:[function(require,module,exports){
 'use strict';
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
@@ -437,7 +170,7 @@ var AudioWidget = function AudioWidget(props) {
 };
 
 module.exports = AudioWidget;
-},{"./Button.react":6,"react":32}],6:[function(require,module,exports){
+},{"./Button.react":4,"react":32}],4:[function(require,module,exports){
 'use strict';
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -524,7 +257,7 @@ function Button(props) {
 }
 
 module.exports = Button;
-},{"react":32}],7:[function(require,module,exports){
+},{"react":32}],5:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -548,6 +281,7 @@ function Canvas(props) {
   var useFullScreen = props.useFullScreen,
       width = props.width,
       height = props.height,
+      id = props.id,
       cellSize = props.cellSize,
       dispatch = props.dispatch,
       focus = props.focus;
@@ -617,7 +351,7 @@ function Canvas(props) {
       style: useFullScreen ? fullScreenStyle : nonFullScreenStyle
     },
     React.createElement('canvas', {
-      id: 'canvas', style: {
+      id: id || "canvas", style: {
         backgroundColor: 'white',
         cursor: 'pointer'
       },
@@ -659,7 +393,7 @@ function withPropsChecker(WrappedComponent) {
 }
 
 module.exports = React.memo(Canvas);
-},{"react":32}],8:[function(require,module,exports){
+},{"react":32}],6:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -699,7 +433,7 @@ function Checkbox(props) {
 }
 
 module.exports = Checkbox;
-},{"react":32}],9:[function(require,module,exports){
+},{"react":32}],7:[function(require,module,exports){
 'use strict';
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -719,7 +453,7 @@ function Divider(props) {
 }
 
 module.exports = Divider;
-},{"react":32}],10:[function(require,module,exports){
+},{"react":32}],8:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -760,7 +494,7 @@ var Dropdown = function Dropdown(props) {
 };
 
 module.exports = Dropdown;
-},{"react":32}],11:[function(require,module,exports){
+},{"react":32}],9:[function(require,module,exports){
 'use strict';
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -791,7 +525,7 @@ var InfoCard = function InfoCard(props) {
 };
 
 module.exports = InfoCard;
-},{"react":32}],12:[function(require,module,exports){
+},{"react":32}],10:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -875,7 +609,7 @@ function Modal(props) {
 }
 
 module.exports = Modal;
-},{"./Button.react":6,"bens_utils":25,"react":32}],13:[function(require,module,exports){
+},{"./Button.react":4,"bens_utils":25,"react":32}],11:[function(require,module,exports){
 'use strict';
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
@@ -965,7 +699,220 @@ var submitValue = function submitValue(onChange, nextVal, onlyInt) {
 };
 
 module.exports = NumberField;
-},{"react":32}],14:[function(require,module,exports){
+},{"react":32}],12:[function(require,module,exports){
+'use strict';
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+/**
+ * See ~/Code/teaching/clusters for an example of how to use the plot
+ * Specifically ui/Main and reducers/plotReducer
+ */
+
+var React = require('react');
+var Button = require('./Button.react');
+var Canvas = require('./Canvas.react');
+var useState = React.useState,
+    useMemo = React.useMemo,
+    useEffect = React.useEffect,
+    useReducer = React.useReducer;
+
+// type Point = {
+//   x: number,
+//   y: number,
+//   color: ?string, // css color
+// };
+//
+// type Axis = {
+//   dimension: 'x' | 'y',
+//   label: string,
+//   min: ?number,
+//   max: ?number,
+//   majorTicks: ?number,
+//   minorTicks: ?number,
+// };
+
+/**
+ * NOTE: 0, 0 is the bottom left corner
+ *
+ * props:
+ *   points: Array<Point>,
+ *   xAxis: Axis,
+ *   yAxis: Axis,
+ *   isLinear: boolean,
+ *
+ * canvas props:
+ *   useFullScreen: boolean,
+ *   width: number,
+ *   height: number,
+ */
+
+var Plot = function Plot(props) {
+
+  // screen resizing
+  var _useState = useState(0),
+      _useState2 = _slicedToArray(_useState, 2),
+      resizeCount = _useState2[0],
+      setResize = _useState2[1];
+
+  useEffect(function () {
+    function handleResize() {
+      setResize(resizeCount + 1);
+    }
+    window.addEventListener('resize', handleResize);
+    return function () {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [resizeCount]);
+
+  // rendering
+  useEffect(function () {
+    var canvas = document.getElementById('canvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+
+    var points = props.points,
+        xAxis = props.xAxis,
+        yAxis = props.yAxis,
+        isLinear = props.isLinear;
+
+    var _canvas$getBoundingCl = canvas.getBoundingClientRect(),
+        width = _canvas$getBoundingCl.width,
+        height = _canvas$getBoundingCl.height;
+
+    // scaling points to canvas
+
+
+    var xTrans = width / (xAxis.max - xAxis.min);
+    var yTrans = height / (yAxis.max - yAxis.min);
+    var transX = function transX(x) {
+      return x * xTrans - xAxis.min * xTrans;
+    };
+    var transY = function transY(y) {
+      return y * yTrans - yAxis.min * yTrans;
+    };
+
+    // clear canvas
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, width, height);
+
+    // drawing axes
+    ctx.fillStyle = 'black';
+    var xMajor = xAxis.majorTicks || 10;
+    for (var x = xAxis.min; x < xAxis.max; x += xMajor) {
+      drawLine(ctx, { x: transX(x), y: height }, { x: transX(x), y: height - 20 });
+    }
+    var xMinor = xAxis.minorTicks || 2;
+    for (var _x = xAxis.min; _x < xAxis.max; _x += xMinor) {
+      drawLine(ctx, { x: transX(_x), y: height }, { x: transX(_x), y: height - 10 });
+    }
+    var yMajor = yAxis.majorTicks || 10;
+    for (var y = yAxis.min; y < yAxis.max; y += yMajor) {
+      drawLine(ctx, { x: 0, y: transY(y) }, { x: 20, y: transY(y) });
+    }
+    var yMinor = yAxis.minorTicks || 2;
+    for (var _y = yAxis.min; _y < yAxis.max; _y += yMinor) {
+      drawLine(ctx, { x: 0, y: transY(_y) }, { x: 10, y: transY(_y) });
+    }
+
+    // drawing points
+    var sortedPoints = [].concat(_toConsumableArray(points)).sort(function (a, b) {
+      return a.x - b.x;
+    });
+    var prevPoint = null;
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = sortedPoints[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var point = _step.value;
+
+        ctx.fillStyle = point.color ? point.color : 'black';
+        var _x2 = transX(point.x);
+        var _y2 = yAxis.max * yTrans - yAxis.min * yTrans - point.y * yTrans;
+        var size = 2;
+        ctx.fillRect(_x2 - size, _y2 - size, size * 2, size * 2);
+
+        if (isLinear && prevPoint != null) {
+          ctx.fillStyle = 'black';
+          drawLine(ctx, prevPoint, { x: _x2, y: _y2 });
+        }
+        prevPoint = { x: _x2, y: _y2 };
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return) {
+          _iterator.return();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+  }, [props, resizeCount]);
+
+  // axis labels
+  var xAxisLabel = null;
+  var yAxisLabel = null;
+  if (props.xAxis.label != null) {
+    xAxisLabel = React.createElement(
+      'div',
+      { style: {
+          textAlign: 'center'
+        } },
+      props.xAxis.label
+    );
+  }
+  if (props.yAxis.label != null) {
+    yAxisLabel = React.createElement(
+      'div',
+      { style: {
+          display: 'table-cell',
+          verticalAlign: 'middle'
+        } },
+      props.yAxis.label
+    );
+  }
+
+  return React.createElement(
+    'div',
+    {
+      style: {
+        width: 'fit-content',
+        display: 'table'
+      }
+    },
+    yAxisLabel,
+    React.createElement(
+      'div',
+      { style: { display: 'inline-block' } },
+      React.createElement(Canvas, {
+        useFullScreen: props.useFullScreen,
+        width: props.width,
+        height: props.height
+      })
+    ),
+    xAxisLabel
+  );
+};
+
+var drawLine = function drawLine(ctx, p1, p2) {
+  ctx.beginPath();
+  ctx.moveTo(p1.x, p1.y);
+  ctx.lineTo(p2.x, p2.y);
+  ctx.stroke();
+  ctx.closePath();
+};
+
+module.exports = Plot;
+},{"./Button.react":4,"./Canvas.react":5,"react":32}],13:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1049,7 +996,7 @@ var quitGameModal = function quitGameModal(dispatch) {
 };
 
 module.exports = QuitButton;
-},{"./Button.react":6,"./Modal.react":12,"bens_utils":25,"react":32}],15:[function(require,module,exports){
+},{"./Button.react":4,"./Modal.react":10,"bens_utils":25,"react":32}],14:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1138,7 +1085,7 @@ var RadioPicker = function (_React$Component) {
 }(React.Component);
 
 module.exports = RadioPicker;
-},{"react":32}],16:[function(require,module,exports){
+},{"react":32}],15:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1208,7 +1155,7 @@ function Slider(props) {
 }
 
 module.exports = Slider;
-},{"./NumberField.react":13,"react":32}],17:[function(require,module,exports){
+},{"./NumberField.react":11,"react":32}],16:[function(require,module,exports){
 'use strict';
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
@@ -1335,7 +1282,76 @@ function Table(props) {
 }
 
 module.exports = Table;
-},{"./Button.react":6,"react":32}],18:[function(require,module,exports){
+},{"./Button.react":4,"react":32}],17:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var plotReducer = function plotReducer(state, action) {
+  switch (action.type) {
+    case 'SET_AXIS':
+      var axis = action.axis;
+
+      var whichAxis = axis.dimension == 'x' ? 'xAxis' : 'yAxis';
+      return _extends({}, state, _defineProperty({}, whichAxis, _extends({ label: axis.dimension, min: 0, max: 100 }, axis)));
+    case 'SET_POINTS':
+      var points = action.points;
+
+      return _extends({}, state, {
+        points: points
+      });
+    case 'ADD_POINTS':
+      {
+        var _points = action.points;
+
+        return _extends({}, state, {
+          points: state.points ? [].concat(_toConsumableArray(state.points), _toConsumableArray(_points)) : _points
+        });
+      }
+    case 'CLEAR_POINTS':
+      {
+        return _extends({}, state, {
+          points: []
+        });
+      }
+    case 'PRINT_POINTS':
+      {
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+          for (var _iterator = state.points[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var point = _step.value;
+
+            console.log(point.x + "," + point.y);
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator.return) {
+              _iterator.return();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
+        }
+
+        return state;
+      }
+  }
+};
+
+module.exports = { plotReducer: plotReducer };
+},{}],18:[function(require,module,exports){
 
 module.exports = {
   AudioWidget: require('./bin/AudioWidget.react.js'),
@@ -1347,13 +1363,15 @@ module.exports = {
   InfoCard: require('./bin/InfoCard.react.js'),
   Modal: require('./bin/Modal.react.js'),
   NumberField: require('./bin/NumberField.react.js'),
+  Plot: require('./bin/Plot.react.js'),
+  plotReducer: require('./bin/plotReducer.js'),
   QuitButton: require('./bin/QuitButton.react.js'),
   RadioPicker: require('./bin/RadioPicker.react.js'),
   Slider: require('./bin/Slider.react.js'),
   Table: require('./bin/Table.react.js'),
 };
 
-},{"./bin/AudioWidget.react.js":5,"./bin/Button.react.js":6,"./bin/Canvas.react.js":7,"./bin/Checkbox.react.js":8,"./bin/Divider.react.js":9,"./bin/Dropdown.react.js":10,"./bin/InfoCard.react.js":11,"./bin/Modal.react.js":12,"./bin/NumberField.react.js":13,"./bin/QuitButton.react.js":14,"./bin/RadioPicker.react.js":15,"./bin/Slider.react.js":16,"./bin/Table.react.js":17}],19:[function(require,module,exports){
+},{"./bin/AudioWidget.react.js":3,"./bin/Button.react.js":4,"./bin/Canvas.react.js":5,"./bin/Checkbox.react.js":6,"./bin/Divider.react.js":7,"./bin/Dropdown.react.js":8,"./bin/InfoCard.react.js":9,"./bin/Modal.react.js":10,"./bin/NumberField.react.js":11,"./bin/Plot.react.js":12,"./bin/QuitButton.react.js":13,"./bin/RadioPicker.react.js":14,"./bin/Slider.react.js":15,"./bin/Table.react.js":16,"./bin/plotReducer.js":17}],19:[function(require,module,exports){
 'use strict';
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }

@@ -1,10 +1,8 @@
 // @flow
 
 const React = require('react');
-const {Button, Canvas} = require('bens_ui_components');
-const Plot = require('./Plot.react');
+const {Button, Canvas, Plot, plotReducer} = require('bens_ui_components');
 const {useState, useMemo, useEffect, useReducer} = React;
-const {plotReducer} = require('../reducers/plotReducer');
 // const {mouseControlsSystem, mouseReducer} = require('bens_reducers');
 
 import type {State, Action} from '../types';

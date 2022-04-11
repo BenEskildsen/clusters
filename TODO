@@ -1,15 +1,13 @@
 
-- plot
+- axes
+  - min and max labels
+
+- plotter
   - input field for csv list of points + cluster
-  - canvas ID needs to be settable in its own package
   - click to add points
     - mouseControlsSystem shouldn't need store
     - rename to remove "Control" from name
     - shouldn't need game
     - should be passed exact gridSpace and pixelSpace dimensions it needs
     - mouseReducer should be usable via useReducer
-  - make plot into a UI component and require it
-    (after axes are reasonable)
 
-- axes
-  - min and max labels
