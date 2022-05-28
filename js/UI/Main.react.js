@@ -42,8 +42,8 @@ function Main(props: Props): React.Node {
         points={state.points}
         xAxis={state.xAxis}
         yAxis={state.yAxis}
-        width={600}
-        height={500}
+        width={500}
+        height={600}
         isLinear={state.isLinear}
       />
       <Button
